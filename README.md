@@ -1,5 +1,7 @@
 # Sales Analytics tests
 
+[![Tests](https://github.com/shcholokoff/MtrlSpcTestTask/actions/workflows/tests.yml/badge.svg)](https://github.com/shcholokoff/MtrlSpcTestTask/actions/workflows/tests.yml)
+
 UI and API tests for the Sales Analytics application: Java 17, Maven, Cucumber 7, Playwright (UI), RestAssured (API).
 
 # Tests run
