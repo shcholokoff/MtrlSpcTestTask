@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check code style
+        run: mvn -B -ntp checkstyle:check
+
+      - name: Compile tests
+        run: mvn -B -ntp test-compile
+
+      - name: Install Playwright browser
+        run: mvn -B -ntp exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.classpathScope=test -D exec.args="install --with-deps chromium"
+
+      - name: Start application under test
+        working-directory: app
+        run: nohup npm start > ../target/app.log 2>&1 &
+
+      - name: Wait for application
+        run: timeout 30 bash -c 'until curl -sf http://localhost:3000/api/transactions > /dev/null; do sleep 1; done'
+
+      - name: Run tests
+        run: mvn -B -ntp test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            target/allure-results
+            target/playwright-traces
+            target/surefire-reports
+            target/log
+            target/app.log
+          if-no-files-found: ignore

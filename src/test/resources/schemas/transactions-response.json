@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "GET /api/transactions response",
+  "type": "object",
+  "required": ["data", "meta"],
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "date", "region", "category", "revenue"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^#[0-9]+$" },
+          "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "region": { "type": "string", "enum": ["Europe", "North America", "Asia"] },
+          "category": { "type": "string", "enum": ["Furniture", "Appliances", "Lighting"] },
+          "revenue": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "required": ["total", "returned", "filters"],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "returned": { "type": "integer", "minimum": 0 },
+        "filters": {
+          "type": "object",
+          "required": ["dateRange", "region", "category", "sort"],
+          "properties": {
+            "dateRange": { "type": "string" },
+            "region": { "type": "string" },
+            "category": { "type": "string" },
+            "sort": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
